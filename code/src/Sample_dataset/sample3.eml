@@ -1,0 +1,22 @@
+From: sender3@example.com
+To: recipient3@example.com
+Subject: Email with Attachment
+Date: Thu, 22 Mar 2025 14:15:00 +0000
+Message-ID: <1234567892@example.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="boundary123"
+
+--boundary123
+Content-Type: text/plain; charset="UTF-8"
+
+Hello,
+
+Please find the attached file.
+
+--boundary123
+Content-Type: text/plain; name="sample.txt"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="sample.txt"
+
+U2FtcGxlIFRleHQgRmlsZQ==
+--boundary123--
