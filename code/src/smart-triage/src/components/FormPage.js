@@ -1,8 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import './FormPage.css';
 
 const FormPage = () => {
   const [files, setFiles] = useState([]);
   const [parsedEmails, setParsedEmails] = useState([]);
+  const [expandedEmailIndex, setExpandedEmailIndex] = useState(null);
+
+  useEffect(() => {
+    if (parsedEmails.length > 0) {
+      setExpandedEmailIndex(0);
+    }
+  }, [parsedEmails]);
 
   const handleFileUpload = async (event) => {
     if (event.target.files) {
@@ -56,34 +64,55 @@ const FormPage = () => {
     setParsedEmails(parsedData);
   };
 
+  const toggleEmailDetails = (index) => {
+    setExpandedEmailIndex(expandedEmailIndex === index ? null : index);
+  };
+
   return (
     <div className="p-6 space-y-4">
-      <h1 className="text-xl font-bold">Upload and Read EML Files</h1>
+      <h1 className="text-xl font-bold custom-heading">Upload and Read EML Files</h1>
 
-      <input
-        type="file"
-        multiple
-        onChange={handleFileUpload}
-        className="block w-full px-4 py-2 border rounded-md"
-      />
-
-      <button
-        onClick={handleReadEmails}
-        className="px-4 py-2 mt-2 bg-blue-500 text-white rounded-md"
-      >
-        Read Stored Emails
-      </button>
+      <div className="input-container">
+        <input
+          type="file"
+          multiple
+          onChange={handleFileUpload}
+          className="file-input"
+          id="file-upload"
+        />
+        <label htmlFor="file-upload" className="custom-file-upload">
+          Choose Files
+        </label>
+        <button
+          onClick={handleReadEmails}
+          className="custom-button"
+        >
+          Read Stored Emails
+        </button>
+      </div>
 
       <div className="mt-4">
         <h2 className="font-semibold">Parsed Email Data:</h2>
         {parsedEmails.length > 0 ? (
-          <ul>
+          <ul className="email-list">
             {parsedEmails.map((email, index) => (
-              <li key={index} className="mb-2">
-                <p><strong>File Name:</strong> {email.fileName}</p>
-                <p><strong>From:</strong> {email.from}</p>
-                <p><strong>To:</strong> {email.to}</p>
-                <p><strong>Subject:</strong> {email.subject}</p>
+              <li key={index} className="email-item mb-2">
+                <p>
+                  <strong>File Name:</strong> {email.fileName}
+                  <button
+                    onClick={() => toggleEmailDetails(index)}
+                    className="toggle-button"
+                  >
+                    {expandedEmailIndex === index ? "−" : "+"}
+                  </button>
+                </p>
+                {expandedEmailIndex === index && (
+                  <ul className="email-details">
+                    <li><strong>From:</strong> {email.from}</li>
+                    <li><strong>To:</strong> {email.to}</li>
+                    <li><strong>Subject:</strong> {email.subject}</li>
+                  </ul>
+                )}
               </li>
             ))}
           </ul>
