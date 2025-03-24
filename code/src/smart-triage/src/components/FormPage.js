@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import './FormPage.css';
+import { generateText } from "../utils/utils";
+import { rule } from "../utils/rule";
+import FilteredComponent from "./FilteredComponent";
 
 const FormPage = () => {
   const [files, setFiles] = useState([]);
   const [parsedEmails, setParsedEmails] = useState([]);
+  const [promptResponse, setPromptResponse] = useState('');
   const [expandedEmailIndex, setExpandedEmailIndex] = useState(null);
 
   useEffect(() => {
@@ -37,7 +41,7 @@ const FormPage = () => {
     });
   };
 
-  const handleReadEmails = () => {
+  const handleReadEmails = async () => {
     const storedFiles = JSON.parse(localStorage.getItem("uploadedEmlFiles"));
     if (!storedFiles) {
       alert("No files found in local storage!");
@@ -58,10 +62,18 @@ const FormPage = () => {
         from: fromMatch ? fromMatch[1] : "Unknown",
         to: toMatch ? toMatch[1] : "Unknown",
         subject: subjectMatch ? subjectMatch[1] : "No Subject",
+        content: content
       };
     });
 
     setParsedEmails(parsedData);
+    console.log('parsedData----',parsedData)
+    console.log('rules----',rule)
+    if(parsedData.length > 0){
+      const promptText = rule + parsedData[0].content;
+      const response = await generateText(promptText)
+      setPromptResponse(response)
+    }
   };
 
   const toggleEmailDetails = (index) => {
@@ -118,6 +130,14 @@ const FormPage = () => {
           </ul>
         ) : (
           <p>No emails parsed yet. Upload and click "Read Stored Emails".</p>
+        )}
+        {promptResponse && (
+          <div className="mt-4">
+            <h2 className="font-semibold">Prompt Response:</h2>
+            {/* <p>{promptResponse}</p> */}
+            <FilteredComponent data={promptResponse} />
+
+          </div>
         )}
       </div>
     </div>
