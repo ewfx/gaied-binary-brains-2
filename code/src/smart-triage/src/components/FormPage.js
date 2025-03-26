@@ -8,16 +8,9 @@ import DataDisplay from "./DataDisplay";
 
 const FormPage = () => {
   const [files, setFiles] = useState([]);
-  const [parsedEmails, setParsedEmails] = useState([]);
   const [promptResponse, setPromptResponse] = useState("");
-  const [expandedEmailIndex, setExpandedEmailIndex] = useState(null);
   const [selectedFileNames, setSelectedFileNames] = useState([]);
 
-  useEffect(() => {
-    if (parsedEmails.length > 0) {
-      setExpandedEmailIndex(0);
-    }
-  }, [parsedEmails]);
 
   const handleFileUpload = async (event) => {
     localStorage.removeItem("uploadedEmlFiles");
@@ -127,8 +120,6 @@ const FormPage = () => {
         };
       })
     );
-
-    setParsedEmails(parsedData);
     const responseData = [];
 
     if (parsedData.length > 0) {
@@ -143,17 +134,12 @@ const FormPage = () => {
       }
 
       const trasformedData = transformDataForUI(responseData);
-      console.log("response-----", trasformedData);
       setPromptResponse(trasformedData);
     }
   };
 
-  const toggleEmailDetails = (index) => {
-    setExpandedEmailIndex(expandedEmailIndex === index ? null : index);
-  };
-
   return (
-    <div class="animated-background">
+    <div className="animated-background">
       <div className="form-page-container">
         <h1 className="page-title">Next-Gen Email & Document Management</h1>
 
