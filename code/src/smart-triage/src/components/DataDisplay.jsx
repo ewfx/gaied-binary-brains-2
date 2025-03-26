@@ -150,17 +150,54 @@ function DataDisplay(transformedData) {
         <h3>Details</h3>
         {selectedName && <p>Selected Name: <strong>{selectedName}</strong></p>}
         {details ? (
-          <pre>{JSON.stringify(details, null, 2)}</pre>
+          <div>
+            <div className="details">
+              {/* Primary Request Type */}
+              {details.primaryRequestType && (
+                <>                
+                    <p>Request Type: {details.primaryRequestType.requestType} </p>                
+                    <p>Sub Request Type: {details.primaryRequestType.subRequestType} </p>               
+                    <p>Reasoning: {details.primaryRequestType.reasoning} </p>
+                 
+                </>
+              )}
+
+              {/* Extracted Fields */}
+              {details.extractedFields && (
+                <>
+                  <h4>Extracted Fields</h4>
+                  {Object.entries(details.extractedFields).map(([key, value]) => (             
+                      <p>{key.replace(/([A-Z])/g, ' $1').trim()}:  {value} </p>
+                    
+                  ))}
+                </>
+              )}
+
+              {/* Duplicate Email Detection */}
+              {details.duplicateEmailDetection && (
+                <>
+                  <h4>Duplicate Email Detection</h4>
+                 
+                    <p>Is Duplicate: {details.duplicateEmailDetection.isDuplicate} </p>
+                 
+                    <p>Reason: {details.duplicateEmailDetection.reason} </p>
+                 
+                </>
+              )}
+            </div>
+          </div>
+        ) : selectedRequestType ? (
+          <p>Select a name from the left to see details.</p>
         ) : (
-          selectedRequestType ? (
-            <p>Select a name from the left to see details.</p>
-          ) : (
-            <p>Select a Request Type from the left.</p>
-          )
+          <p>Select a Request Type from the left.</p>
         )}
+
       </div>
     </div>
   );
 }
+
+
+
 
 export default DataDisplay;
