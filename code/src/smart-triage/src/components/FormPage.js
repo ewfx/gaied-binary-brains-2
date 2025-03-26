@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { PDFDocument } from "pdf-lib";
 import "./FormPage.css";
+import Loader from "./Loader";
 import { generateText } from "../utils/utils";
 import { rule } from "../utils/rule";
 import { transformDataForUI } from "../utils/transformDataForUI";
@@ -10,7 +11,11 @@ const FormPage = () => {
   const [files, setFiles] = useState([]);
   const [promptResponse, setPromptResponse] = useState("");
   const [selectedFileNames, setSelectedFileNames] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+  // useEffect(() => {
+  //   localStorage.removeItem("uploadedEmlFiles");
+  // }, []);
 
   const handleFileUpload = async (event) => {
     localStorage.removeItem("uploadedEmlFiles");
@@ -38,9 +43,12 @@ const FormPage = () => {
   };
 
   const handleReadEmails = async () => {
+    // setPromptResponse("");
+    setLoading(true);
     const storedFiles = JSON.parse(localStorage.getItem("uploadedEmlFiles"));
     if (!storedFiles) {
       alert("No files found in local storage!");
+      setLoading(false);
       return;
     }
 
@@ -136,11 +144,13 @@ const FormPage = () => {
       const trasformedData = transformDataForUI(responseData);
       setPromptResponse(trasformedData);
     }
+    setLoading(false);
   };
 
   return (
     <div className="animated-background">
-      <div className="form-page-container">
+      {loading && <Loader />}
+      <div className={`form-page-container ${loading ? 'loading' : ''}`}>
         <h1 className="page-title">Next-Gen Email & Document Management</h1>
 
         <div className="upload-section">
