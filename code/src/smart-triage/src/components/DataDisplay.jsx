@@ -84,6 +84,12 @@ const styles = `
     font-size: 12px;
     color: #333;
   }
+  .details h1, h2, h3, h4, p {
+    text-align: left;
+  }
+  hr {
+    margin: 16px 0;
+  }
 `;
 
 function DataDisplay(transformedData) {
@@ -154,7 +160,22 @@ function DataDisplay(transformedData) {
         {details ? (
           <div>
             <div className="details">
+              {details.possibleRequestTypes && (
+                <>
+                  <h4>Possible Request Types</h4>
+                  {details.possibleRequestTypes.map((request, index) => (
+                    <>
+                      <p key={index}>Request Type: {request.requestType}</p>
+                      <p key={index}>Sub Request Type: {request.subRequestType}</p>
+                      <p key={index}>Confidence Score: {request.confidenceScore}</p>
+                      <p key={index}>Reasoning: {request.reasoning}</p>
+                      <hr />
+                    </>
+                  ))}
+                </>
+              )}
               {/* Primary Request Type */}
+              <h4>Primary Request Type</h4>
               {details.primaryRequestType && (
                 <>                
                     <p>Request Type: {details.primaryRequestType.requestType} </p>                
@@ -163,18 +184,18 @@ function DataDisplay(transformedData) {
                  
                 </>
               )}
-
+              <hr />
               {/* Extracted Fields */}
               {details.extractedFields && (
                 <>
-                  <h4>Extracted Fields</h4>
+                  <h4>Request Details</h4>
                   {Object.entries(details.extractedFields).map(([key, value]) => (             
                       <p>{key.replace(/([A-Z])/g, ' $1').trim()}:  {value} </p>
                     
                   ))}
                 </>
               )}
-
+              <hr />
               {/* Duplicate Email Detection */}
               {details.duplicateEmailDetection && (
                 <>
