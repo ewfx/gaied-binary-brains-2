@@ -25,7 +25,7 @@ const FormPage = () => {
     if (event.target.files) {
       const fileArray = Array.from(event.target.files);
       setFiles(fileArray);
-      setSelectedFileNames(fileArray.map(file => file.name));
+      setSelectedFileNames(fileArray.map((file) => file.name));
 
       const storedFiles = {};
       for (const file of fileArray) {
@@ -77,52 +77,57 @@ const FormPage = () => {
   //   }
   // };
 
-  
   const handleReadEmails = async () => {
     const storedFiles = JSON.parse(localStorage.getItem("uploadedEmlFiles"));
     if (!storedFiles) {
       alert("No files found in local storage!");
       return;
     }
-  
+
     const parsedData = await Promise.all(
       Object.keys(storedFiles).map(async (fileName) => {
         const base64Data = storedFiles[fileName];
         const content = atob(base64Data.split(",")[1]);
-  
+
         // Extract metadata and email body
         const fromMatch = content.match(/^From: (.+)$/m);
         const toMatch = content.match(/^To: (.+)$/m);
         const subjectMatch = content.match(/^Subject: (.+)$/m);
         const dateMatch = content.match(/^Date: (.+)$/m);
         const emailBody = content.split("\r\n\r\n")[1] || ""; // Extract body after headers
-  
+
         // Extract attachments
         const attachments = [];
         const boundaryMatch = content.match(/boundary="([^"]+)"/);
         if (boundaryMatch) {
           const boundary = boundaryMatch[1];
           const parts = content.split(`--${boundary}`);
-  
+
           for (const part of parts) {
             const contentTypeMatch = part.match(/Content-Type: ([^;]+)/);
-            const contentDispositionMatch = part.match(/Content-Disposition: attachment; filename="([^"]+)"/);
-  
+            const contentDispositionMatch = part.match(
+              /Content-Disposition: attachment; filename="([^"]+)"/
+            );
+
             if (contentTypeMatch && contentDispositionMatch) {
               const contentType = contentTypeMatch[1].trim();
               const fileName = contentDispositionMatch[1].trim();
               const fileBase64 = part.split("\r\n\r\n")[1]?.trim();
-  
+
               if (fileBase64) {
-                const fileBytes = Uint8Array.from(atob(fileBase64), (c) => c.charCodeAt(0));
-  
+                const fileBytes = Uint8Array.from(atob(fileBase64), (c) =>
+                  c.charCodeAt(0)
+                );
+
                 // Parse based on content type
                 let parsedContent = null;
                 if (contentType === "application/pdf") {
                   try {
                     const pdfDoc = await PDFDocument.load(fileBytes);
-                    parsedContent = (await pdfDoc.getPage(0).getTextContent())
-                      .items.map((item) => item.str)
+                    parsedContent = (
+                      await pdfDoc.getPage(0).getTextContent()
+                    ).items
+                      .map((item) => item.str)
                       .join(" ");
                   } catch (err) {
                     console.error("Error parsing PDF:", err);
@@ -132,7 +137,7 @@ const FormPage = () => {
                 } else {
                   parsedContent = "Binary content - unable to display.";
                 }
-  
+
                 attachments.push({
                   name: fileName,
                   contentType,
@@ -142,7 +147,7 @@ const FormPage = () => {
             }
           }
         }
-  
+
         return {
           fileName,
           from: fromMatch ? fromMatch[1] : "Unknown",
@@ -151,30 +156,30 @@ const FormPage = () => {
           date: dateMatch ? dateMatch[1] : "Unknown Date",
           body: emailBody,
           attachments,
-          content: content
+          content: content,
         };
       })
     );
-  
+
     setParsedEmails(parsedData);
-    const responseData = []
-  
+    const responseData = [];
+
     if (parsedData.length > 0) {
-      for(let i = 0; i < parsedData.length; i++){  
+      for (let i = 0; i < parsedData.length; i++) {
         const promptText = rule + parsedData[i].content;
         const response = await generateText(promptText);
-        const updatedResponse = {...response, fileName: parsedData[i].fileName};
-        responseData.push(updatedResponse)
+        const updatedResponse = {
+          ...response,
+          fileName: parsedData[i].fileName,
+        };
+        responseData.push(updatedResponse);
       }
 
-
-      const trasformedData = transformDataForUI(responseData)
-      console.log('response-----', trasformedData)
+      const trasformedData = transformDataForUI(responseData);
+      console.log("response-----", trasformedData);
       setPromptResponse(trasformedData);
     }
   };
-
-  
 
   const toggleEmailDetails = (index) => {
     setExpandedEmailIndex(expandedEmailIndex === index ? null : index);
@@ -183,7 +188,6 @@ const FormPage = () => {
   return (
     <div class="animated-background">
       <div className="form-page-container">
-
         <h1 className="page-title">Next-Gen Email & Document Management</h1>
 
         <div className="upload-section">
@@ -203,7 +207,9 @@ const FormPage = () => {
             {selectedFileNames.length > 0 ? (
               <ul>
                 {selectedFileNames.map((fileName, index) => (
-                  <li key={index} className="file-name">{fileName}</li>
+                  <li key={index} className="file-name">
+                    {fileName}
+                  </li>
                 ))}
               </ul>
             ) : (
@@ -212,12 +218,8 @@ const FormPage = () => {
           </div>
         </div>
 
-
         <div className="btn-section">
-          <button
-            onClick={handleReadEmails}
-            className="generate-report-button"
-          >
+          <button onClick={handleReadEmails} className="generate-report-button">
             Generate Report
           </button>
         </div>
@@ -253,9 +255,11 @@ const FormPage = () => {
 
           {promptResponse && (
             <div className="prompt-response">
-               <h2 className="section-title">Parsed Data</h2>
+              <h2 className="section-title">Filtered Documents</h2>
               {/* {promptResponse && promptResponse.length > 0 && promptResponse.map((promptRes, index) => <FilteredComponent data={promptRes} />)} */}
-              <DataDisplay trasformedData={promptResponse} />
+              {promptResponse && Object.keys(promptResponse).length && (
+                <DataDisplay transformedData={promptResponse} />
+              )}
             </div>
           )}
         </div>

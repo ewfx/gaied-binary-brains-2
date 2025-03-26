@@ -1,94 +1,44 @@
 export function transformDataForUI(jsonData) {
   /**
-   * Transforms the given JSON data into a structure suitable for the two-pane UI design.
-   * This version creates an array of objects for consistent data handling in the UI.
+   * Transforms the given JSON data to group by primaryRequestType.requestType.
    *
    * Args:
    * jsonData: An array of objects representing the input data.
    *
    * Returns:
-   * An array of objects, each containing the requestType, name, and remaining details.
+   * An object where keys are primary request types and values are arrays of
+   * objects, each containing the filename and the remaining details.
    */
-  const transformedData = [];
+  const transformedData = {};
 
   if (!jsonData || jsonData.length === 0) {
     return transformedData;
   }
 
-  const firstItemKeys = Object.keys(jsonData[0]);
-  let requestTypeFieldName = null;
-  let nameFieldName = null;
+  jsonData.forEach(item => {
+    const primaryRequestType = item.primaryRequestType;
+    const fileName = item.fileName;
 
-  // Heuristic to find the request type field
-  for (const key of firstItemKeys) {
-    if (key.toLowerCase().includes("requesttype")) {
-      requestTypeFieldName = key;
-      break;
-    } else if (typeof jsonData[0][key] === "object" && jsonData[0][key] !== null) {
-      const nestedKeys = Object.keys(jsonData[0][key]);
-      for (const nestedKey of nestedKeys) {
-        if (nestedKey.toLowerCase().includes("requesttype")) {
-          requestTypeFieldName = `${key}.${nestedKey}`;
-          break;
-        }
-      }
-      if (requestTypeFieldName) break;
-    }
-  }
-
-  // Heuristic to find the name field
-  for (const key of firstItemKeys) {
-    if (key.toLowerCase().includes("name") || key.toLowerCase().includes("file")) {
-      nameFieldName = key;
-      break;
-    }
-  }
-
-  if (!requestTypeFieldName || !nameFieldName) {
-    console.error("Could not automatically determine 'Request Type' or 'Name' field names from the data.");
-    return transformedData;
-  }
-
-  jsonData.forEach((item) => {
-    // Dynamically access nested request type field
-    let requestType = item;
-    const requestTypeFields = requestTypeFieldName.split(".");
-    for (const field of requestTypeFields) {
-      if (requestType && requestType.hasOwnProperty(field)) {
-        requestType = requestType[field];
-      } else {
-        requestType = null;
-        break;
-      }
-    }
-
-    const name = item[nameFieldName];
-
-    if (requestType && name) {
-      // Extract details for the right pane
+    if (primaryRequestType && primaryRequestType.requestType && fileName) {
+      const requestType = primaryRequestType.requestType;
       const details = {};
       for (const key in item) {
-        if (
-          item.hasOwnProperty(key) &&
-          key !== requestTypeFieldName.split(".")[0] && // Avoid the root of the request type field
-          key !== nameFieldName
-        ) {
+        if (item.hasOwnProperty(key) && key !== "possibleRequestTypes" && key !== "primaryRequestType" && key !== "fileName") {
           details[key] = item[key];
         }
       }
 
-      // Add to transformed data
-      transformedData.push({
-        requestType,
-        name,
-        details,
-      });
+      if (!transformedData[requestType]) {
+        transformedData[requestType] =[]; // Corrected line: Assign an empty array
+      }
+      transformedData[requestType].push({ name: fileName, details: details });
     }
   });
 
   return transformedData;
 }
 
+export default transformDataForUI;
 // Example usage with your provided JSON data:
 const jsonData = [
   {
@@ -162,4 +112,4 @@ const jsonData = [
 ];
 
 const transformedData = transformDataForUI(jsonData);
-console.log(JSON.stringify(transformedData, null, 2));
+

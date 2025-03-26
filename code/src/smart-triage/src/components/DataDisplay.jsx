@@ -86,13 +86,14 @@ const styles = `
   }
 `;
 
-
 function DataDisplay(transformedData) {
   const [selectedRequestType, setSelectedRequestType] = useState(null);
   const [selectedName, setSelectedName] = useState(null);
   const [details, setDetails] = useState(null);
 
-  const requestTypes = Object.keys(transformedData);
+  console.log('transformed data---', transformedData)
+
+  const requestTypes = Object.keys(transformedData.transformedData) || []
 
   const handleRequestTypeClick = (requestType) => {
     setSelectedRequestType(requestType);
@@ -102,7 +103,7 @@ function DataDisplay(transformedData) {
 
   const handleNameClick = (name) => {
     setSelectedName(name);
-    const selectedRequestTypeData = transformedData[selectedRequestType];
+    const selectedRequestTypeData = transformedData.transformedData[selectedRequestType];
     const selectedItem = selectedRequestTypeData.find(item => item.name === name);
     if (selectedItem) {
       setDetails(selectedItem.details);
@@ -126,9 +127,10 @@ function DataDisplay(transformedData) {
               >
                 {requestType}
               </button>
-              {selectedRequestType === requestType && transformedData[requestType] && (
+              {selectedRequestType === requestType && transformedData.transformedData[requestType] && (
                 <ul style={{ marginLeft: '15px' }}>
-                  {transformedData[requestType].map((item) => (
+                  {console.log('requesttype-----', transformedData.transformedData[requestType])}
+                  {transformedData.transformedData[requestType].map((item) => (
                     <li key={item.name}>
                       <button
                         onClick={() => handleNameClick(item.name)}
@@ -196,8 +198,5 @@ function DataDisplay(transformedData) {
     </div>
   );
 }
-
-
-
 
 export default DataDisplay;
