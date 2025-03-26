@@ -8,7 +8,7 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 // 3. Replace 'YOUR_API_KEY' with your actual Gemini API key:
-const API_KEY = "AIzaSyD09mCsycgHMCt4gSQQTS9xAERhxG-uUwE";
+const API_KEY = "AIzaSyBe-Ype3jVA2iJweKOWIYL4B85WXTIPnug";
 
 // 4. Initialize the Gemini API client:
 const genAI = new GoogleGenerativeAI(API_KEY);
@@ -16,7 +16,7 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 export async function generateText(prompt) {
   try {
     // 5. Select the Gemini model (e.g., 'gemini-pro' for text generation):
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
 
     // 6. Construct the generation request:
     const result = await model.generateContent({

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { PDFDocument } from "pdf-lib";
 import "./FormPage.css";
 import { generateText } from "../utils/utils";
 import { rule } from "../utils/rule";
@@ -18,6 +19,7 @@ const FormPage = () => {
   }, [parsedEmails]);
 
   const handleFileUpload = async (event) => {
+    localStorage.removeItem("uploadedEmlFiles");
     if (event.target.files) {
       const fileArray = Array.from(event.target.files);
       setFiles(fileArray);
@@ -41,37 +43,133 @@ const FormPage = () => {
     });
   };
 
+  // const handleReadEmails = async () => {
+  //   const storedFiles = JSON.parse(localStorage.getItem("uploadedEmlFiles"));
+  //   if (!storedFiles) {
+  //     alert("No files found in local storage!");
+  //     return;
+  //   }
+
+  //   const parsedData = Object.keys(storedFiles).map((fileName) => {
+  //     const base64Data = storedFiles[fileName];
+  //     const content = atob(base64Data.split(",")[1]);
+
+  //     const fromMatch = content.match(/^From: (.+)$/m);
+  //     const toMatch = content.match(/^To: (.+)$/m);
+  //     const subjectMatch = content.match(/^Subject: (.+)$/m);
+
+  //     return {
+  //       fileName,
+  //       from: fromMatch ? fromMatch[1] : "Unknown",
+  //       to: toMatch ? toMatch[1] : "Unknown",
+  //       subject: subjectMatch ? subjectMatch[1] : "No Subject",
+  //       content: content,
+  //     };
+  //   });
+
+  //   setParsedEmails(parsedData);
+  //   if (parsedData.length > 0) {
+  //     const promptText = rule + parsedData[0].content;
+  //     const response = await generateText(promptText);
+  //     setPromptResponse(response);
+  //   }
+  // };
+
+  
   const handleReadEmails = async () => {
     const storedFiles = JSON.parse(localStorage.getItem("uploadedEmlFiles"));
     if (!storedFiles) {
       alert("No files found in local storage!");
       return;
     }
-
-    const parsedData = Object.keys(storedFiles).map((fileName) => {
-      const base64Data = storedFiles[fileName];
-      const content = atob(base64Data.split(",")[1]);
-
-      const fromMatch = content.match(/^From: (.+)$/m);
-      const toMatch = content.match(/^To: (.+)$/m);
-      const subjectMatch = content.match(/^Subject: (.+)$/m);
-
-      return {
-        fileName,
-        from: fromMatch ? fromMatch[1] : "Unknown",
-        to: toMatch ? toMatch[1] : "Unknown",
-        subject: subjectMatch ? subjectMatch[1] : "No Subject",
-        content: content,
-      };
-    });
-
+  
+    const parsedData = await Promise.all(
+      Object.keys(storedFiles).map(async (fileName) => {
+        const base64Data = storedFiles[fileName];
+        const content = atob(base64Data.split(",")[1]);
+  
+        // Extract metadata and email body
+        const fromMatch = content.match(/^From: (.+)$/m);
+        const toMatch = content.match(/^To: (.+)$/m);
+        const subjectMatch = content.match(/^Subject: (.+)$/m);
+        const dateMatch = content.match(/^Date: (.+)$/m);
+        const emailBody = content.split("\r\n\r\n")[1] || ""; // Extract body after headers
+  
+        // Extract attachments
+        const attachments = [];
+        const boundaryMatch = content.match(/boundary="([^"]+)"/);
+        if (boundaryMatch) {
+          const boundary = boundaryMatch[1];
+          const parts = content.split(`--${boundary}`);
+  
+          for (const part of parts) {
+            const contentTypeMatch = part.match(/Content-Type: ([^;]+)/);
+            const contentDispositionMatch = part.match(/Content-Disposition: attachment; filename="([^"]+)"/);
+  
+            if (contentTypeMatch && contentDispositionMatch) {
+              const contentType = contentTypeMatch[1].trim();
+              const fileName = contentDispositionMatch[1].trim();
+              const fileBase64 = part.split("\r\n\r\n")[1]?.trim();
+  
+              if (fileBase64) {
+                const fileBytes = Uint8Array.from(atob(fileBase64), (c) => c.charCodeAt(0));
+  
+                // Parse based on content type
+                let parsedContent = null;
+                if (contentType === "application/pdf") {
+                  try {
+                    const pdfDoc = await PDFDocument.load(fileBytes);
+                    parsedContent = (await pdfDoc.getPage(0).getTextContent())
+                      .items.map((item) => item.str)
+                      .join(" ");
+                  } catch (err) {
+                    console.error("Error parsing PDF:", err);
+                  }
+                } else if (contentType.startsWith("text/")) {
+                  parsedContent = new TextDecoder().decode(fileBytes);
+                } else {
+                  parsedContent = "Binary content - unable to display.";
+                }
+  
+                attachments.push({
+                  name: fileName,
+                  contentType,
+                  content: parsedContent,
+                });
+              }
+            }
+          }
+        }
+  
+        return {
+          fileName,
+          from: fromMatch ? fromMatch[1] : "Unknown",
+          to: toMatch ? toMatch[1] : "Unknown",
+          subject: subjectMatch ? subjectMatch[1] : "No Subject",
+          date: dateMatch ? dateMatch[1] : "Unknown Date",
+          body: emailBody,
+          attachments,
+          content: content
+        };
+      })
+    );
+  
     setParsedEmails(parsedData);
+    const responseData = []
+  
     if (parsedData.length > 0) {
-      const promptText = rule + parsedData[0].content;
-      const response = await generateText(promptText);
-      setPromptResponse(response);
+      for(let i = 0; i < parsedData.length; i++){  
+        const promptText = rule + parsedData[i].content;
+        const response = await generateText(promptText);
+        responseData.push(response)
+      }
+      // console.log('content-----', parsedData[0].content)
+      
+      setPromptResponse(responseData);
     }
   };
+
+  
 
   const toggleEmailDetails = (index) => {
     setExpandedEmailIndex(expandedEmailIndex === index ? null : index);
@@ -151,7 +249,7 @@ const FormPage = () => {
           {promptResponse && (
             <div className="prompt-response">
                <h2 className="section-title">Parsed Data</h2>
-              <FilteredComponent data={promptResponse} />
+              {promptResponse && promptResponse.length > 0 && promptResponse.map((promptRes, index) => <FilteredComponent data={promptRes} />)}
             </div>
           )}
         </div>
