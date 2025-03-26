@@ -88,5 +88,5 @@ const API_KEY = `YOUR_API_KEY`
 
 ## 👥 Team
 - **Tripti Rawat** - [GitHub](https://github.com/triptirawat) 
-- **Rahul Gupta** - [GitHub](https://github.com/agarwalVaishali14) 
-- **Siva Pandi** - [GitHub](https://github.com/rgupta2525) 
+- **Rahul Gupta** - [GitHub](https://github.com/rgupta2525) 
+- **Siva Pandi** - [GitHub](https://github.com/sivakumarrails) 
