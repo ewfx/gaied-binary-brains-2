@@ -1,17 +1,15 @@
 export function transformDataForUI(jsonData) {
   /**
    * Transforms the given JSON data into a structure suitable for the two-pane UI design.
-   * This version attempts to automatically determine the request type and name field names
-   * from the data itself (specifically by inspecting the first object).
+   * This version creates an array of objects for consistent data handling in the UI.
    *
    * Args:
    * jsonData: An array of objects representing the input data.
    *
    * Returns:
-   * An object where keys are request types and values are arrays of
-   * objects, each containing the name and the remaining details.
+   * An array of objects, each containing the requestType, name, and remaining details.
    */
-  const transformedData = {};
+  const transformedData = [];
 
   if (!jsonData || jsonData.length === 0) {
     return transformedData;
@@ -26,7 +24,7 @@ export function transformDataForUI(jsonData) {
     if (key.toLowerCase().includes("requesttype")) {
       requestTypeFieldName = key;
       break;
-    } else if (typeof jsonData[0][key] === 'object' && jsonData[0][key] !== null) {
+    } else if (typeof jsonData[0][key] === "object" && jsonData[0][key] !== null) {
       const nestedKeys = Object.keys(jsonData[0][key]);
       for (const nestedKey of nestedKeys) {
         if (nestedKey.toLowerCase().includes("requesttype")) {
@@ -51,10 +49,10 @@ export function transformDataForUI(jsonData) {
     return transformedData;
   }
 
-  jsonData.forEach(item => {
+  jsonData.forEach((item) => {
     // Dynamically access nested request type field
     let requestType = item;
-    const requestTypeFields = requestTypeFieldName.split('.');
+    const requestTypeFields = requestTypeFieldName.split(".");
     for (const field of requestTypeFields) {
       if (requestType && requestType.hasOwnProperty(field)) {
         requestType = requestType[field];
@@ -70,17 +68,21 @@ export function transformDataForUI(jsonData) {
       // Extract details for the right pane
       const details = {};
       for (const key in item) {
-        if (item.hasOwnProperty(key) &&
-            key !== requestTypeFieldName.split('.')[0] && // Avoid the root of the request type field
-            key !== nameFieldName) {
+        if (
+          item.hasOwnProperty(key) &&
+          key !== requestTypeFieldName.split(".")[0] && // Avoid the root of the request type field
+          key !== nameFieldName
+        ) {
           details[key] = item[key];
         }
       }
 
-      if (!transformedData[requestType]) {
-        transformedData[requestType] =[]
-      }
-      transformedData[requestType].push({ name: name, details: details });
+      // Add to transformed data
+      transformedData.push({
+        requestType,
+        name,
+        details,
+      });
     }
   });
 
