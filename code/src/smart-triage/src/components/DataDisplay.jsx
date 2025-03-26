@@ -90,14 +90,15 @@ const styles = `
   hr {
     margin: 16px 0;
   }
+  .details .primary {
+  font-weight: bold;
+  }
 `;
 
 function DataDisplay(transformedData) {
   const [selectedRequestType, setSelectedRequestType] = useState(null);
   const [selectedName, setSelectedName] = useState(null);
   const [details, setDetails] = useState(null);
-
-  console.log('transformed data---', transformedData)
 
   const requestTypes = Object.keys(transformedData.transformedData) || []
 
@@ -135,7 +136,6 @@ function DataDisplay(transformedData) {
               </button>
               {selectedRequestType === requestType && transformedData.transformedData[requestType] && (
                 <ul style={{ marginLeft: '15px' }}>
-                  {console.log('requesttype-----', transformedData.transformedData[requestType])}
                   {transformedData.transformedData[requestType].map((item) => (
                     <li key={item.name}>
                       <button
@@ -165,8 +165,8 @@ function DataDisplay(transformedData) {
                   <h4>Possible Request Types</h4>
                   {details.possibleRequestTypes.map((request, index) => (
                     <>
-                      <p key={index}>Request Type: {request.requestType}</p>
-                      <p key={index}>Sub Request Type: {request.subRequestType}</p>
+                      <p className="primary" key={index}>Request Type: {request.requestType}</p>
+                      <p className="primary" key={index}>Sub Request Type: {request.subRequestType}</p>
                       <p key={index}>Confidence Score: {request.confidenceScore}</p>
                       <p key={index}>Reasoning: {request.reasoning}</p>
                       <hr />
@@ -178,8 +178,8 @@ function DataDisplay(transformedData) {
               <h4>Primary Request Type</h4>
               {details.primaryRequestType && (
                 <>                
-                    <p>Request Type: {details.primaryRequestType.requestType} </p>                
-                    <p>Sub Request Type: {details.primaryRequestType.subRequestType} </p>               
+                    <p className="primary"> Request Type: {details.primaryRequestType.requestType} </p>                
+                    <p className="primary">Sub Request Type: {details.primaryRequestType.subRequestType} </p>               
                     <p>Reasoning: {details.primaryRequestType.reasoning} </p>
                  
                 </>

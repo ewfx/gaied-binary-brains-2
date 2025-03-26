@@ -34,7 +34,6 @@ export async function generateText(prompt) {
       if (generatedText.includes('```')) {
         generatedText = generatedText.substring(0, generatedText.length - 4).trimEnd();
       }
-      console.log("Generated Text:", JSON.parse(generatedText)); // Print the generatedText);
       return JSON.parse(generatedText); // Parse the generatedText;
     } else {
       console.error("No text generated in the response.");
