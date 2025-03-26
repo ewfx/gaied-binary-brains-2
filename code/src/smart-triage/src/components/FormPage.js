@@ -4,6 +4,8 @@ import "./FormPage.css";
 import { generateText } from "../utils/utils";
 import { rule } from "../utils/rule";
 import FilteredComponent from "./FilteredComponent";
+import { transformDataForUI } from "../utils/transformDataForUI";
+import DataDisplay from "./DataDisplay";
 
 const FormPage = () => {
   const [files, setFiles] = useState([]);
@@ -161,11 +163,14 @@ const FormPage = () => {
       for(let i = 0; i < parsedData.length; i++){  
         const promptText = rule + parsedData[i].content;
         const response = await generateText(promptText);
-        responseData.push(response)
+        const updatedResponse = {...response, fileName: parsedData[i].fileName};
+        responseData.push(updatedResponse)
       }
-      // console.log('content-----', parsedData[0].content)
-      
-      setPromptResponse(responseData);
+
+
+      const trasformedData = transformDataForUI(responseData)
+      console.log('response-----', trasformedData)
+      setPromptResponse(trasformedData);
     }
   };
 
@@ -249,7 +254,8 @@ const FormPage = () => {
           {promptResponse && (
             <div className="prompt-response">
                <h2 className="section-title">Parsed Data</h2>
-              {promptResponse && promptResponse.length > 0 && promptResponse.map((promptRes, index) => <FilteredComponent data={promptRes} />)}
+              {/* {promptResponse && promptResponse.length > 0 && promptResponse.map((promptRes, index) => <FilteredComponent data={promptRes} />)} */}
+              <DataDisplay trasformedData={promptResponse} />
             </div>
           )}
         </div>
