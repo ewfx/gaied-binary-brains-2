@@ -58,7 +58,6 @@ export async function generateTextStream(prompt) {
       contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
 
-    console.log("Streaming generated text:");
     for await (const chunk of result.stream) {
       const text = chunk.text();
       if (text) {
@@ -70,55 +69,3 @@ export async function generateTextStream(prompt) {
     console.error("Error generating text stream:", error);
   }
 }
-
-// Example usage for streaming:
-const userPromptStream = "Tell me a story about a brave little robot.";
-// generateTextStream(userPromptStream);
-
-// --- Working with Images (Multimodal) ---
-// Note: This requires a model that supports multimodal input (e.g., 'gemini-pro-vision')
-// and you'll need to provide image data (e.g., as base64 encoded strings or URLs).
-
-// const fs = require('node:fs/promises'); // For reading local files
-
-// async function generateTextAndImage(prompt, imagePath) {
-//   try {
-//     const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-
-//     const imageFile = await fs.readFile(imagePath);
-//     const imageBase64 = Buffer.from(imageFile).toString('base64');
-
-//     const result = await model.generateContent({
-//       contents: [
-//         { role: "user", parts: [{ text: prompt }] },
-//         { role: "user", parts: [{ image: { data: { mimeType: "image/jpeg", data: imageBase64 } } }] },
-//       ],
-//     });
-
-//     const response = await result.response;
-//     if (response.candidates && response.candidates.length > 0) {
-//       const generatedText = response.candidates[0].content.parts[0].text;
-//       console.log("Generated Text with Image:", generatedText);
-//       return generatedText;
-//     } else {
-//       console.error("No text generated in the response with image.");
-//       return null;
-//     }
-//   } catch (error) {
-//     console.error("Error generating text with image:", error);
-//     return null;
-//   }
-// }
-
-// Example usage for image and text (replace with your image path):
-// const imagePrompt = "Describe what you see in this image.";
-// const imageFilePath = "./path/to/your/image.jpg";
-// generateTextAndImage(imagePrompt, imageFilePath);
-
-// --- Important Notes ---
-// 1. Get your API key: You need to obtain an API key from the Google Cloud AI Platform. Follow the official Google AI documentation for instructions.
-// 2. Choose the right model: The 'model' parameter determines which Gemini model you are using. 'gemini-pro' is suitable for general text generation. For multimodal tasks (text and images), use a model like 'gemini-pro-vision'.
-// 3. Input and Output: The 'contents' array in the request defines the conversation history. Each object in the array represents a turn, with a 'role' ('user' or 'model') and 'parts' (containing the actual content).
-// 4. Error Handling: The 'try...catch' blocks are essential for handling potential errors during API calls.
-// 5. Asynchronous Operations: The API calls are asynchronous, so you need to use 'async' and 'await' to handle the promises returned by the SDK.
-// 6. Documentation: Refer to the official Google Generative AI documentation for the most up-to-date information and more advanced features: [https://ai.google.dev/](https://ai.google.dev/)

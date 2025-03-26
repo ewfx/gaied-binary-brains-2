@@ -13,10 +13,6 @@ const FormPage = () => {
   const [selectedFileNames, setSelectedFileNames] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   localStorage.removeItem("uploadedEmlFiles");
-  // }, []);
-
   const handleFileUpload = async (event) => {
     localStorage.removeItem("uploadedEmlFiles");
     if (event.target.files) {
@@ -43,7 +39,6 @@ const FormPage = () => {
   };
 
   const handleReadEmails = async () => {
-    // setPromptResponse("");
     setLoading(true);
     const storedFiles = JSON.parse(localStorage.getItem("uploadedEmlFiles"));
     if (!storedFiles) {
