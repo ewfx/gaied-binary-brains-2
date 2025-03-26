@@ -1,5 +1,9 @@
-Replace this file with files that you would like to use for your demo. This may include
+- The recording of the working session can be found in :
+/artifacts/demo/Smart_Triage_demo_Win -> Windows
+/artifacts/demo/Smart_Triage_demo_MAC -> MAC
 
-- A presentation/deck in pdf or pptx format
-- A demo video (screen capture) in mp4 or other popular video formats
-- Any other document describing your solution (in pdf or md format)
+The powerpoint presentation can be found in :
+/artifacts/demo/Smart_Traige.pptx
+
+The details related to installation of application can be found in :
+/code/README.md
