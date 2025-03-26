@@ -1,4 +1,4 @@
-# 🚀 Project Name: Binary-Brains
+# 🚀 Project Name: Smart Triage
 
 ## 📌 Table of Contents
 - [Introduction](#introduction)
@@ -14,12 +14,13 @@
 ---
 
 ## 🎯 Introduction
-Commercial Bank Lending Service teams handle a high volume of email servicing requests with diverse content and attachments, requiring manual triage by gatekeepers. This process involves interpreting emails, classifying requests, extracting data, and assigning tasks, but it is time-consuming and prone to errors. Automating email classification and data extraction with Generative AI (LLMs) aims to enhance efficiency, accuracy, and turnaround time while reducing manual efforts.
+Handling a high volume of email servicing requests with diverse content and attachments often requires manual triage, which involves interpreting emails, categorizing requests, extracting key data, and assigning tasks. This process is not only time-consuming but also prone to errors. By integrating Generative AI (LLMs) for email classification and data extraction, the workflow becomes more efficient and accurate, reducing manual effort while enhancing turnaround times.
 
 
 ## 🎥 Demo
-📹 Video Demo: https://github.com/ewfx/gaied-binary-brains-2/blob/main/artifacts/demo/Smart_Triage_demo_Win.mp4
-https://github.com/ewfx/gaied-binary-brains-2/blob/main/artifacts/demo/Smart_Triage_demo_MAC.mov
+📹 Video Demo: https://github.com/ewfx/gaied-binary-brains-2/blob/main/artifacts/demo/Smart_Triage_demo_Win.mp4.zip
+
+https://github.com/ewfx/gaied-binary-brains-2/blob/main/artifacts/demo/Smart_Triage_demo_MAC.mov.zip
 
 🖼️ PPT: https://github.com/ewfx/gaied-binary-brains-2/blob/main/artifacts/demo/Smart_Triage.pptx 
 
